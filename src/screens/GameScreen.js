@@ -4,15 +4,8 @@ import bg from '../../assets/images/bg.jpeg';
 import styles from '../global/styles';
 import { Auth } from 'aws-amplify';
 import Cell from '../components/Cell';
-let emptyMap = [
-  ['', '', ''],
-  ['', '', ''],
-  ['', '', ''],
-];
-const copyArray = arr => {
-  return arr.map(row => row.slice());
-};
-
+import { copyArray, emptyMap } from '../utils';
+import { getWinner, isTie } from '../utils/gameLogic';
 const GameScreen = () => {
   const [gameMaps, setMap] = useState(emptyMap);
   const [gameLevel, setLevel] = useState('local');
@@ -43,15 +36,6 @@ const GameScreen = () => {
     });
     let chosenOption;
 
-    // defend
-    // possibleMoves.forEach(move => {
-    //   const mapCopy = copyArray(gameMaps);
-    //   mapCopy[move.row][move.col] = 'x';
-    //   const winner = getWinner(mapCopy);
-    //   if (winner === 'x') {
-    //     chosenOption = move;
-    //   }
-    // });
     if (gameLevel === 'medium') {
       chosenOption = botAttackorDefend(possibleMoves, 'o');
     }
@@ -59,16 +43,6 @@ const GameScreen = () => {
     if (!chosenOption) {
       chosenOption = botAttackorDefend(possibleMoves, 'x');
     }
-
-    // attack
-    // possibleMoves.forEach(move => {
-    //   const mapCopy = copyArray(gameMaps);
-    //   mapCopy[move.row][move.col] = 'o';
-    //   const winner = getWinner(mapCopy);
-    //   if (winner === 'o') {
-    //     chosenOption = move;
-    //   }
-    // });
 
     if (!chosenOption) {
       chosenOption =
@@ -103,63 +77,9 @@ const GameScreen = () => {
     });
     setPlayer(prevPlayer => (prevPlayer === 'x' ? 'o' : 'x'));
   };
-  const getWinner = winnerMap => {
-    for (let i = 0; i < 3; i++) {
-      const isRowXWin = winnerMap[i].every(item => item === 'x');
-      const isRowOWin = winnerMap[i].every(item => item === 'o');
-      if (isRowXWin) {
-        return 'x';
-      }
-      if (isRowOWin) {
-        return 'o';
-      }
-    }
-    for (let col = 0; col < 3; col++) {
-      let isColXWin = true;
-      let isColOWin = true;
-      for (let row = 0; row < 3; row++) {
-        if (winnerMap[row][col] !== 'x') {
-          isColXWin = false;
-        }
-        if (winnerMap[row][col] !== 'o') {
-          isColOWin = false;
-        }
-      }
-      if (isColXWin) {
-        return 'x';
-      }
-      if (isColOWin) {
-        return 'o';
-      }
-    }
 
-    let isDiagonal1XWin = true;
-    let isDiagonal2XWin = true;
-    let isDiagonal1OWin = true;
-    let isDiagonal2OWin = true;
-    for (let i = 0; i < 3; i++) {
-      if (winnerMap[i][i] !== 'x') {
-        isDiagonal1XWin = false;
-      }
-      if (winnerMap[i][i] !== 'o') {
-        isDiagonal1OWin = false;
-      }
-      if (winnerMap[i][2 - i] !== 'x') {
-        isDiagonal2XWin = false;
-      }
-      if (winnerMap[i][2 - i] !== 'o') {
-        isDiagonal2OWin = false;
-      }
-    }
-    if (isDiagonal1XWin || isDiagonal2XWin) {
-      return 'x';
-    }
-    if (isDiagonal1OWin || isDiagonal2OWin) {
-      return 'o';
-    }
-  };
   const checkTie = () => {
-    if (!gameMaps.some(row => row.some(cell => cell === ''))) {
+    if (isTie(gameMaps)) {
       Alert.alert("It's a tie", 'Tie', [{ text: 'Reset', onPress: resetGame }]);
     }
   };
@@ -172,11 +92,7 @@ const GameScreen = () => {
     ]);
   };
   const resetGame = () => {
-    setMap([
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', ''],
-    ]);
+    setMap(copyArray(emptyMap));
     setPlayer('x');
   };
   const onLogout = () => {
