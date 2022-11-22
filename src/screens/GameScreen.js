@@ -14,12 +14,13 @@ const copyArray = arr => {
 
 const GameScreen = () => {
   const [gameMaps, setMap] = useState(emptyMap);
+  const [gameLevel, setLevel] = useState('local');
   const [player, setPlayer] = useState('x');
   useEffect(() => {
-    if (player === 'o') {
+    if (player === 'o' && gameLevel !== 'local') {
       botTurn();
     }
-  }, [player]);
+  }, [player, gameLevel]);
 
   useEffect(() => {
     const winner = getWinner(gameMaps);
@@ -50,7 +51,9 @@ const GameScreen = () => {
     //     chosenOption = move;
     //   }
     // });
-    chosenOption = botAttackorDefend(possibleMoves, 'o');
+    if (gameLevel === 'medium') {
+      chosenOption = botAttackorDefend(possibleMoves, 'o');
+    }
 
     if (!chosenOption) {
       chosenOption = botAttackorDefend(possibleMoves, 'x');
@@ -190,6 +193,41 @@ const GameScreen = () => {
             ))}
           </View>
         ))}
+      </View>
+      <View style={styles.buttons}>
+        <Text
+          onPress={() => setLevel('local')}
+          style={[
+            styles.button,
+            {
+              backgroundColor: gameLevel === 'local' ? '#4f5686' : '#191f24',
+            },
+          ]}
+        >
+          Local
+        </Text>
+        <Text
+          onPress={() => setLevel('easy')}
+          style={[
+            styles.button,
+            {
+              backgroundColor: gameLevel === 'easy' ? '#4f5686' : '#191f24',
+            },
+          ]}
+        >
+          Easy
+        </Text>
+        <Text
+          onPress={() => setLevel('medium')}
+          style={[
+            styles.button,
+            {
+              backgroundColor: gameLevel === 'medium' ? '#4f5686' : '#191f24',
+            },
+          ]}
+        >
+          Medium
+        </Text>
       </View>
     </ImageBackground>
   );

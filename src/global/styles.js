@@ -1,7 +1,6 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-
   bg: {
     width: '100%',
     height: '100%',
@@ -10,8 +9,8 @@ export default StyleSheet.create({
     paddingTop: 15,
   },
   title: {
-    color: '#fff',
-    fontSize: 30,
+    color: '#105686',
+    fontSize: 32,
     fontWeight: 'bold',
     position: 'absolute',
     top: 100,
@@ -23,5 +22,21 @@ export default StyleSheet.create({
   row: {
     flexDirection: 'row',
     flex: 1,
+  },
+  buttons: {
+    flexDirection: 'row',
+    position: 'absolute',
+    bottom: 80,
+  },
+  button: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginHorizontal: 10,
+    backgroundColor: '#191f24',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+    overflow: 'hidden',
   },
 });
