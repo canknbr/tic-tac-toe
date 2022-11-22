@@ -10,15 +10,15 @@ import {
   Alert,
 } from 'react-native';
 import bg from './assets/images/bg.jpeg';
-export default function App() {
-  const [gameMaps, setMap] = useState([
-    ['', '', ''],
-    ['', '', ''],
-    ['', '', ''],
-  ]);
 
-  const [row, setRow] = useState(0);
-  const [col, setCol] = useState(0);
+let emptyMap = [
+  ['', '', ''],
+  ['', '', ''],
+  ['', '', ''],
+];
+
+export default function App() {
+  const [gameMaps, setMap] = useState(emptyMap);
   const [player, setPlayer] = useState('x');
   const onPress = (rowIndex, colIndex) => {
     if (gameMaps[rowIndex][colIndex] !== '') {
@@ -31,18 +31,21 @@ export default function App() {
       return newMap;
     });
     setPlayer(prevPlayer => (prevPlayer === 'x' ? 'o' : 'x'));
-    checkWinner();
+    const winner = getWinner();
+    if (winner) {
+      gameWon(winner);
+    } else {
+      checkTie();
+    }
   };
-  const checkWinner = () => {
+  const getWinner = () => {
     for (let i = 0; i < 3; i++) {
       const isRowXWin = gameMaps[i].every(item => item === 'x');
       const isRowOWin = gameMaps[i].every(item => item === 'o');
       if (isRowXWin) {
-        Alert.alert('X is the winner');
-        return;
+        return 'x';
       } else if (isRowOWin) {
-        Alert.alert('O is the winner');
-        return;
+        return 'o';
       }
     }
     for (let col = 0; col < 3; col++) {
@@ -57,12 +60,10 @@ export default function App() {
         }
       }
       if (isColXWin) {
-        Alert.alert('X is the winner');
-        return;
+        return 'x';
       }
       if (isColOWin) {
-        Alert.alert('O is the winner');
-        return;
+        return 'o';
       }
     }
 
@@ -84,18 +85,33 @@ export default function App() {
         isDiagonal2OWin = false;
       }
     }
-    if (isDiagonal1XWin) {
-      Alert.alert('X is the winner');
+    if (isDiagonal1XWin || isDiagonal2XWin) {
+      return 'x';
     }
-    if (isDiagonal1OWin) {
-      Alert.alert('O is the winner');
+    if (isDiagonal1OWin || isDiagonal2OWin) {
+      return 'o';
     }
-    if (isDiagonal2XWin) {
-      Alert.alert('X is the winner');
+  };
+  const checkTie = () => {
+    if (!gameMaps.some(row => row.some(cell => cell === ''))) {
+      Alert.alert("It's a tie", 'Tie', [{ text: 'Reset', onPress: resetGame }]);
     }
-    if (isDiagonal2OWin) {
-      Alert.alert('O is the winner');
-    }
+  };
+  const gameWon = player => {
+    Alert.alert(`Yeyyy`, `${player} is the winner`, [
+      {
+        text: 'Play Again',
+        onPress: resetGame,
+      },
+    ]);
+  };
+  const resetGame = () => {
+    setMap([
+      ['', '', ''],
+      ['', '', ''],
+      ['', '', ''],
+    ]);
+    setPlayer('x');
   };
 
   return (
