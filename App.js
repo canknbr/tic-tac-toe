@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet } from 'react-native';
 import GameScreen from './src/screens/GameScreen';
-export default function App() {
+
+function App() {
   return (
     <View style={styles.container}>
       <GameScreen />
@@ -18,3 +19,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+export default App;
