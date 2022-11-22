@@ -39,4 +39,11 @@ export default StyleSheet.create({
     borderRadius: 10,
     overflow: 'hidden',
   },
+  logout: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+    position: 'absolute',
+    bottom: 25,
+  },
 });

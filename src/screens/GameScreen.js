@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, ImageBackground, Alert } from 'react-native';
 import bg from '../../assets/images/bg.jpeg';
 import styles from '../global/styles';
+import { Auth } from 'aws-amplify';
 import Cell from '../components/Cell';
 let emptyMap = [
   ['', '', ''],
@@ -178,6 +179,9 @@ const GameScreen = () => {
     ]);
     setPlayer('x');
   };
+  const onLogout = () => {
+    Auth.signOut();
+  };
   return (
     <ImageBackground style={styles.bg} source={bg} resizeMode="contain">
       <Text style={styles.title}>Current Turn : {player.toUpperCase()}</Text>
@@ -229,6 +233,9 @@ const GameScreen = () => {
           Medium
         </Text>
       </View>
+      <Text style={styles.logout} onPress={onLogout}>
+        Sign Out
+      </Text>
     </ImageBackground>
   );
 };

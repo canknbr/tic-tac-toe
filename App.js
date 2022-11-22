@@ -1,7 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet } from 'react-native';
 import GameScreen from './src/screens/GameScreen';
+import { Amplify } from 'aws-amplify';
 
+import awsconfig from './src/aws-exports';
+import { withAuthenticator } from 'aws-amplify-react-native';
+Amplify.configure(awsconfig);
 function App() {
   return (
     <View style={styles.container}>
@@ -20,4 +24,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default withAuthenticator(App);
