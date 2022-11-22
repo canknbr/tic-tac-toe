@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, View, ImageBackground, Alert } from 'react-native';
 import bg from '../../assets/images/bg.jpeg';
 import styles from '../global/styles';
@@ -8,11 +8,85 @@ let emptyMap = [
   ['', '', ''],
   ['', '', ''],
 ];
+const copyArray = arr => {
+  return arr.map(row => row.slice());
+};
 
 const GameScreen = () => {
   const [gameMaps, setMap] = useState(emptyMap);
   const [player, setPlayer] = useState('x');
+  useEffect(() => {
+    if (player === 'o') {
+      botTurn();
+    }
+  }, [player]);
 
+  useEffect(() => {
+    const winner = getWinner(gameMaps);
+    if (winner) {
+      gameWon(winner);
+    } else {
+      checkTie();
+    }
+  }, [gameMaps]);
+
+  const botTurn = () => {
+    const possibleMoves = [];
+    gameMaps.forEach((row, rowIndex) => {
+      row.forEach((cell, cellIndex) => {
+        if (cell === '') {
+          possibleMoves.push({ row: rowIndex, col: cellIndex });
+        }
+      });
+    });
+    let chosenOption;
+
+    // defend
+    // possibleMoves.forEach(move => {
+    //   const mapCopy = copyArray(gameMaps);
+    //   mapCopy[move.row][move.col] = 'x';
+    //   const winner = getWinner(mapCopy);
+    //   if (winner === 'x') {
+    //     chosenOption = move;
+    //   }
+    // });
+    chosenOption = botAttackorDefend(possibleMoves, 'o');
+
+    if (!chosenOption) {
+      chosenOption = botAttackorDefend(possibleMoves, 'x');
+    }
+
+    // attack
+    // possibleMoves.forEach(move => {
+    //   const mapCopy = copyArray(gameMaps);
+    //   mapCopy[move.row][move.col] = 'o';
+    //   const winner = getWinner(mapCopy);
+    //   if (winner === 'o') {
+    //     chosenOption = move;
+    //   }
+    // });
+
+    if (!chosenOption) {
+      chosenOption =
+        possibleMoves[Math.floor(Math.random() * possibleMoves.length)];
+    }
+
+    if (chosenOption) {
+      onPress(chosenOption.row, chosenOption.col);
+    }
+  };
+  const botAttackorDefend = (arr, mode) => {
+    let chosenOption;
+    arr.forEach(move => {
+      const mapCopy = copyArray(gameMaps);
+      mapCopy[move.row][move.col] = mode;
+      const winner = getWinner(mapCopy);
+      if (winner === mode) {
+        chosenOption = move;
+      }
+    });
+    return chosenOption;
+  };
   const onPress = (rowIndex, colIndex) => {
     if (gameMaps[rowIndex][colIndex] !== '') {
       Alert.alert('Position already occupied');
@@ -24,20 +98,15 @@ const GameScreen = () => {
       return newMap;
     });
     setPlayer(prevPlayer => (prevPlayer === 'x' ? 'o' : 'x'));
-    const winner = getWinner();
-    if (winner) {
-      gameWon(winner);
-    } else {
-      checkTie();
-    }
   };
-  const getWinner = () => {
+  const getWinner = winnerMap => {
     for (let i = 0; i < 3; i++) {
-      const isRowXWin = gameMaps[i].every(item => item === 'x');
-      const isRowOWin = gameMaps[i].every(item => item === 'o');
+      const isRowXWin = winnerMap[i].every(item => item === 'x');
+      const isRowOWin = winnerMap[i].every(item => item === 'o');
       if (isRowXWin) {
         return 'x';
-      } else if (isRowOWin) {
+      }
+      if (isRowOWin) {
         return 'o';
       }
     }
@@ -45,10 +114,10 @@ const GameScreen = () => {
       let isColXWin = true;
       let isColOWin = true;
       for (let row = 0; row < 3; row++) {
-        if (gameMaps[row][col] !== 'x') {
+        if (winnerMap[row][col] !== 'x') {
           isColXWin = false;
         }
-        if (gameMaps[row][col] !== 'o') {
+        if (winnerMap[row][col] !== 'o') {
           isColOWin = false;
         }
       }
@@ -61,20 +130,20 @@ const GameScreen = () => {
     }
 
     let isDiagonal1XWin = true;
-    let isDiagonal1OWin = true;
     let isDiagonal2XWin = true;
+    let isDiagonal1OWin = true;
     let isDiagonal2OWin = true;
     for (let i = 0; i < 3; i++) {
-      if (gameMaps[i][i] !== 'x') {
+      if (winnerMap[i][i] !== 'x') {
         isDiagonal1XWin = false;
       }
-      if (gameMaps[i][i] !== 'o') {
+      if (winnerMap[i][i] !== 'o') {
         isDiagonal1OWin = false;
       }
-      if (gameMaps[i][2 - i] !== 'x') {
+      if (winnerMap[i][2 - i] !== 'x') {
         isDiagonal2XWin = false;
       }
-      if (gameMaps[i][2 - i] !== 'o') {
+      if (winnerMap[i][2 - i] !== 'o') {
         isDiagonal2OWin = false;
       }
     }
