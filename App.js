@@ -31,7 +31,73 @@ export default function App() {
       return newMap;
     });
     setPlayer(prevPlayer => (prevPlayer === 'x' ? 'o' : 'x'));
+    checkWinner();
   };
+  const checkWinner = () => {
+    for (let i = 0; i < 3; i++) {
+      const isRowXWin = gameMaps[i].every(item => item === 'x');
+      const isRowOWin = gameMaps[i].every(item => item === 'o');
+      if (isRowXWin) {
+        Alert.alert('X is the winner');
+        return;
+      } else if (isRowOWin) {
+        Alert.alert('O is the winner');
+        return;
+      }
+    }
+    for (let col = 0; col < 3; col++) {
+      let isColXWin = true;
+      let isColOWin = true;
+      for (let row = 0; row < 3; row++) {
+        if (gameMaps[row][col] !== 'x') {
+          isColXWin = false;
+        }
+        if (gameMaps[row][col] !== 'o') {
+          isColOWin = false;
+        }
+      }
+      if (isColXWin) {
+        Alert.alert('X is the winner');
+        return;
+      }
+      if (isColOWin) {
+        Alert.alert('O is the winner');
+        return;
+      }
+    }
+
+    let isDiagonal1XWin = true;
+    let isDiagonal1OWin = true;
+    let isDiagonal2XWin = true;
+    let isDiagonal2OWin = true;
+    for (let i = 0; i < 3; i++) {
+      if (gameMaps[i][i] !== 'x') {
+        isDiagonal1XWin = false;
+      }
+      if (gameMaps[i][i] !== 'o') {
+        isDiagonal1OWin = false;
+      }
+      if (gameMaps[i][2 - i] !== 'x') {
+        isDiagonal2XWin = false;
+      }
+      if (gameMaps[i][2 - i] !== 'o') {
+        isDiagonal2OWin = false;
+      }
+    }
+    if (isDiagonal1XWin) {
+      Alert.alert('X is the winner');
+    }
+    if (isDiagonal1OWin) {
+      Alert.alert('O is the winner');
+    }
+    if (isDiagonal2XWin) {
+      Alert.alert('X is the winner');
+    }
+    if (isDiagonal2OWin) {
+      Alert.alert('O is the winner');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground style={styles.bg} source={bg} resizeMode="contain">
