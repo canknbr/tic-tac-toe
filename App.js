@@ -3,26 +3,47 @@ import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
+  Pressable,
   View,
   ImageBackground,
   SafeAreaView,
+  Alert,
 } from 'react-native';
 import bg from './assets/images/bg.jpeg';
 export default function App() {
-  const [gameMaps, setMap] = useState(
-    new Array(3).fill(new Array(3).fill('x'))
-  );
+  const [gameMaps, setMap] = useState([
+    ['', '', ''],
+    ['', '', ''],
+    ['', '', ''],
+  ]);
 
   const [row, setRow] = useState(0);
   const [col, setCol] = useState(0);
+  const [player, setPlayer] = useState('x');
+  const onPress = (rowIndex, colIndex) => {
+    if (gameMaps[rowIndex][colIndex] !== '') {
+      Alert.alert('Position already occupied');
+      return;
+    }
+    setMap(prevMap => {
+      const newMap = [...prevMap];
+      newMap[rowIndex][colIndex] = player;
+      return newMap;
+    });
+    setPlayer(prevPlayer => (prevPlayer === 'x' ? 'o' : 'x'));
+  };
   return (
     <View style={styles.container}>
       <ImageBackground style={styles.bg} source={bg} resizeMode="contain">
         <View style={styles.map}>
-          {gameMaps.map(row => (
-            <View style={styles.row}>
-              {row.map(cell => (
-                <View style={styles.cell}>
+          {gameMaps.map((row, i) => (
+            <View key={`row-${i}`} style={styles.row}>
+              {row.map((cell, j) => (
+                <Pressable
+                  key={`col-${j}`}
+                  onPress={() => onPress(i, j)}
+                  style={styles.cell}
+                >
                   {cell === 'o' && <View style={styles.circle} />}
                   {cell === 'x' && (
                     <View style={styles.cross}>
@@ -34,7 +55,7 @@ export default function App() {
                   )}
                   {/*  */}
                   {/*  */}
-                </View>
+                </Pressable>
               ))}
             </View>
           ))}
